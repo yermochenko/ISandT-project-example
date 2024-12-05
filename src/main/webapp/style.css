@@ -13,7 +13,7 @@ html, body {
 	margin: 0;
 	padding: 0;
 	height: 4em;
-	box-shadow: rgba(0, 0, 0, 0.1) 0 6px 24px 0;
+	box-shadow: #2222 0 6px 24px 0;
 }
 
 .header__title {
@@ -39,11 +39,11 @@ html, body {
 
 .data_table {
 	border-collapse: collapse;
-	box-shadow: rgba(0, 0, 0, 0.1) 0 6px 24px 0;
+	box-shadow: #2222 0 6px 24px 0;
 }
 
 .data_table th, .data_table td {
-	border: 1px solid black;
+	border: 1px solid #222;
 	padding: 0.5em 2em 0.5em 1em;
 }
 
@@ -52,8 +52,8 @@ html, body {
 }
 
 .data_table__not_active td {
+	background: #EEE;
 	color: #999;
-	text-decoration: line-through;
 }
 
 .text-link {
