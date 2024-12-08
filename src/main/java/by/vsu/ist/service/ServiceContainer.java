@@ -2,6 +2,7 @@ package by.vsu.ist.service;
 
 import by.vsu.ist.repository.AccountRepository;
 import by.vsu.ist.repository.DatabaseConnector;
+import by.vsu.ist.repository.TransactionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,9 +12,19 @@ public class ServiceContainer implements AutoCloseable {
 	public AccountService getAccountServiceInstance() throws SQLException {
 		if(accountService == null) {
 			accountService = new AccountService();
+			accountService.setTransactionManager(getTransactionManagerInstance());
 			accountService.setAccountRepository(getAccountRepositoryInstance());
 		}
 		return accountService;
+	}
+
+	private TransactionManager transactionManager;
+	private TransactionManager getTransactionManagerInstance() throws SQLException {
+		if(transactionManager == null) {
+			transactionManager = new TransactionManager();
+			transactionManager.setConnection(getConnectionInstance());
+		}
+		return transactionManager;
 	}
 
 	private AccountRepository accountRepository;

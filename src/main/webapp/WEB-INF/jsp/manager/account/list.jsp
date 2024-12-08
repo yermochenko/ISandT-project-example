@@ -1,13 +1,13 @@
 <%@page contentType="text/html;charset=UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 	<meta charset="UTF-8">
-	<title>Гринготтс :: Клиенты банка</title>
-	<c:url var="url__style_css" value="/style.css"/>
+	<title>Гринготтс :: Банковские счета</title>
+	<c:url var="url__style_css" value="${'/style.css'}"/>
 	<link rel="stylesheet" href="${url__style_css}">
-	<c:url var="url__style_manager_css" value="/style-manager.css"/>
+	<c:url var="url__style_manager_css" value="${'/style-manager.css'}"/>
 	<link rel="stylesheet" href="${url__style_manager_css}">
 </head>
 <body>
@@ -21,6 +21,7 @@
 			<th>Номер</th>
 			<th>Владелец</th>
 			<th>Баланс</th>
+			<th></th>
 		</tr>
 		<%--@elvariable id="accounts" type="java.util.List"--%>
 		<c:forEach var="account" items="${accounts}">
@@ -33,9 +34,19 @@
 				<td>${account.number}</td>
 				<td>${account.owner}</td>
 				<td>${account.balance}</td>
+				<td>
+					<c:url var="url__manager_account_edit" value="${'/manager/account/edit.html'}">
+						<c:param name="id" value="${account.id}"/>
+					</c:url>
+					<a href="${url__manager_account_edit}" class="text-link primary-color">изменить</a>
+				</td>
 			</tr>
 		</c:forEach>
 	</table>
+	<div class="buttons_block">
+		<c:url var="url__manager_account_edit" value="${'/manager/account/edit.html'}"/>
+		<a href="${url__manager_account_edit}" class="button button__secondary">Открыть счёт</a>
+	</div>
 </div>
 </body>
 </html>

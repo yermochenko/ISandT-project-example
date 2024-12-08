@@ -56,6 +56,70 @@ html, body {
 	color: #999;
 }
 
+.form {
+	display: table-cell;
+	min-width: 500px;
+	border: 1px solid #222;
+	padding: 2em;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 6px 24px 0;
+}
+
+.input_block {
+	margin-bottom: 2em;
+}
+
+.input_block label {
+	display: block;
+	margin-bottom: 0.5em;
+}
+
+.input_block input[type="text"] {
+	border: 1px solid #222;
+	border-radius: 3px;
+	width: calc( 100% - 1em - 2px );
+	font-size: 0.9em;
+	padding: 0.25em 0.5em;
+}
+
+.input_block input[disabled] {
+	color: #999;
+	border-color: #999;
+	background: #EEE;
+}
+
+.buttons_block {
+	margin-top: 2em;
+}
+
+.button {
+	border: 1px solid #222;
+	border-radius: 5px;
+	padding: 0.5em 1em;
+	margin-right: 1.5em;
+	min-width: 5em;
+	font-size: 0.9em;
+	color: #EEE;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.button__primary {
+	background: #292;
+}
+
+.button__secondary {
+	background: #22E;
+}
+
+.button__danger {
+	background: #922;
+}
+
+.button__disabled {
+	background: #666;
+	cursor: default;
+}
+
 .text-link {
 	text-decoration: none;
 }
