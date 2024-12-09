@@ -26,12 +26,19 @@ public class AccountService extends BaseService {
 	}
 
 	public Optional<Account> findById(Long id) throws SQLException {
-		Optional<Account> account = accountRepository.read(id);
-		if(account.isPresent()) {
-			List<Transfer> transfers = transferRepository.readByAccount(id);
-			account.get().setTransfers(transfers);
+		getTransactionManager().startTransaction();
+		try {
+			Optional<Account> account = accountRepository.read(id);
+			if(account.isPresent()) {
+				List<Transfer> transfers = transferRepository.readByAccount(id);
+				account.get().setTransfers(transfers);
+			}
+			getTransactionManager().commitTransaction();
+			return account;
+		} catch(SQLException e) {
+			getTransactionManager().rollbackTransaction();
+			throw e;
 		}
-		return account;
 	}
 
 	public void save(Account account) throws SQLException {
