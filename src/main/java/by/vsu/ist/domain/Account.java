@@ -1,10 +1,13 @@
 package by.vsu.ist.domain;
 
+import java.util.List;
+
 public class Account extends Entity {
 	private String number;
 	private String owner;
 	private Long balance;
 	private boolean active;
+	private List<Transfer> transfers;
 
 	public final String getNumber() {
 		return number;
@@ -36,6 +39,14 @@ public class Account extends Entity {
 
 	public final void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public List<Transfer> getTransfers() {
+		return transfers;
+	}
+
+	public void setTransfers(List<Transfer> transfers) {
+		this.transfers = transfers;
 	}
 
 	@Override

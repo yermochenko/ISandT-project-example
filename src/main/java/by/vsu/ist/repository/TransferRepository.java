@@ -46,7 +46,7 @@ public class TransferRepository extends BaseRepository {
 	}
 
 	public List<Transfer> readByAccount(Long accountId) throws SQLException {
-		String sql = "SELECT \"id\", \"sender_id\", \"receiver_id\", \"sum\", \"date\", \"purpose\" FROM \"transfer\" WHERE \"sender_id\" = ? OR \"receiver_id\" = ?";
+		String sql = "SELECT \"id\", \"sender_id\", \"receiver_id\", \"sum\", \"date\", \"purpose\" FROM \"transfer\" WHERE \"sender_id\" = ? OR \"receiver_id\" = ? ORDER BY \"date\" DESC";
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try {

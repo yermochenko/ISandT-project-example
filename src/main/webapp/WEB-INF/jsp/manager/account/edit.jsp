@@ -1,6 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
-<%@taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@taglib prefix="fn" uri="jakarta.tags.functions"%>
 <%--@elvariable id="account" type="by.vsu.ist.domain.Account"--%>
 <c:choose>
 	<c:when test="${not empty account}">
@@ -55,6 +56,17 @@
 					<input type="checkbox" name="active" ${active}> активный ли счёт
 				</label>
 			</div>
+			<div class="input_block">
+				<label for="operations-amount-input">Количество операций по счёту:</label>
+				<input type="text" id="operations-amount-input" value="${fn:length(account.transfers)}" disabled>
+			</div>
+			<c:if test="${not empty account.transfers}">
+				<div class="input_block">
+					<label for="last-operation-date-input">Дата последней операции:</label>
+					<fmt:formatDate var="last_operation_date" value="${account.transfers[0].date}" pattern="d MMMM yyyy г."/>
+					<input type="text" id="last-operation-date-input" value="${last_operation_date}" disabled>
+				</div>
+			</c:if>
 		</c:if>
 		<div class="buttons_block">
 			<button type="submit" class="button button__primary">Сохранить</button>
