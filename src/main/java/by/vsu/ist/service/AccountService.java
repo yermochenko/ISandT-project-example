@@ -6,7 +6,9 @@ import by.vsu.ist.repository.AccountRepository;
 import by.vsu.ist.repository.TransferRepository;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class AccountService extends BaseService {
@@ -25,6 +27,21 @@ public class AccountService extends BaseService {
 		return accountRepository.readAll();
 	}
 
+	public List<Account> findActive() throws SQLException {
+		getTransactionManager().startTransaction();
+		try {
+			List<Account> accounts = accountRepository.readActive();
+			for(Account account : accounts) {
+				account.setTransfers(transferRepository.readByAccount(account.getId()));
+			}
+			getTransactionManager().commitTransaction();
+			return accounts;
+		} catch(SQLException e) {
+			getTransactionManager().rollbackTransaction();
+			throw e;
+		}
+	}
+
 	public Optional<Account> findById(Long id) throws SQLException {
 		getTransactionManager().startTransaction();
 		try {
@@ -32,6 +49,28 @@ public class AccountService extends BaseService {
 			if(account.isPresent()) {
 				List<Transfer> transfers = transferRepository.readByAccount(id);
 				account.get().setTransfers(transfers);
+			}
+			getTransactionManager().commitTransaction();
+			return account;
+		} catch(SQLException e) {
+			getTransactionManager().rollbackTransaction();
+			throw e;
+		}
+	}
+
+	public Optional<Account> findByIdWithTransfers(Long id) throws SQLException {
+		getTransactionManager().startTransaction();
+		try {
+			Optional<Account> account = accountRepository.read(id);
+			if(account.isPresent()) {
+				List<Transfer> transfers = transferRepository.readByAccount(id);
+				account.get().setTransfers(transfers);
+				Map<Long, Account> accountMap = new HashMap<>();
+				accountMap.put(account.get().getId(), account.get());
+				for(Transfer transfer : transfers) {
+					transfer.setSender(restore(accountMap, transfer.getSender().orElse(null)));
+					transfer.setReceiver(restore(accountMap, transfer.getReceiver().orElse(null)));
+				}
 			}
 			getTransactionManager().commitTransaction();
 			return account;
@@ -57,5 +96,16 @@ public class AccountService extends BaseService {
 		} else {
 			accountRepository.create(account);
 		}
+	}
+
+	private Account restore(Map<Long, Account> cache, Account account) throws SQLException {
+		if(account != null) {
+			Long id = account.getId();
+			Account cachedAccount = cache.get(id);
+			if(cachedAccount != null) return cachedAccount;
+			account = accountRepository.read(id).orElse(null);
+			if(account != null) cache.put(id, account);
+		}
+		return account;
 	}
 }

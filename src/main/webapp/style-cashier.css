@@ -13,3 +13,36 @@
 .secondary-background {
 	background: #8F6;
 }
+
+.warning {
+	font-weight: bold;
+	color: #EB4;
+}
+
+.balance {
+	font-family: Consolas, monospace;
+}
+
+td.balance {
+	text-align: right;
+}
+
+.view-balance {
+	font-size: 150%;
+	font-family: Consolas, monospace;
+	font-weight: bold;
+	color: #922;
+}
+
+.incoming-sum, .outcoming-sum {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.incoming-sum {
+	color: #292;
+}
+
+.outcoming-sum {
+	color: #922;
+}

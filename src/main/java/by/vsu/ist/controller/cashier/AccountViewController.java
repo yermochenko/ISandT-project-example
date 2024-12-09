@@ -1,4 +1,4 @@
-package by.vsu.ist.controller;
+package by.vsu.ist.controller.cashier;
 
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.service.AccountService;
@@ -13,22 +13,25 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
-@WebServlet("/manager/account/edit.html")
-public class AccountEditController extends HttpServlet {
+@WebServlet("/cashier/account/view.html")
+public class AccountViewController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		Long id = null;
 		try {
-			id = Long.parseLong(req.getParameter("id"));
-		} catch(NumberFormatException ignored) {}
-		if(id != null) {
+			Long id = Long.parseLong(req.getParameter("id"));
 			try(ServiceContainer container = new ServiceContainer()) {
 				AccountService accountService = container.getAccountServiceInstance();
-				Optional<Account> account = accountService.findById(id);
-				account.ifPresent(value -> req.setAttribute("account", value));
+				Optional<Account> account = accountService.findByIdWithTransfers(id);
+				if(account.isPresent()) {
+					req.setAttribute("account", account.get());
+					req.getRequestDispatcher("/WEB-INF/jsp/cashier/account/view.jsp").forward(req, resp);
+				} else {
+					throw new IllegalArgumentException();
+				}
 			} catch(SQLException e) {
 				throw new ServletException(e);
 			}
+		} catch(IllegalArgumentException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
-		req.getRequestDispatcher("/WEB-INF/jsp/manager/account/edit.jsp").forward(req, resp);
 	}
 }

@@ -1,4 +1,4 @@
-package by.vsu.ist.controller;
+package by.vsu.ist.controller.manager;
 
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.service.AccountService;
