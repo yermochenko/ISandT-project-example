@@ -1,5 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
+<%@taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -33,7 +34,7 @@
 			<tr class="${css_class}">
 				<td>${account.number}</td>
 				<td>${account.owner}</td>
-				<td>${account.balance}</td>
+				<td class="balance"><fmt:formatNumber value="${account.balance div 100}" pattern="#,##0.00"/></td>
 				<td>
 					<c:url var="url__manager_account_edit" value="${'/manager/account/edit.html'}">
 						<c:param name="id" value="${account.id}"/>

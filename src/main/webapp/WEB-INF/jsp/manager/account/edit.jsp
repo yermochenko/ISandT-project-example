@@ -44,9 +44,9 @@
 		<c:if test="${not empty account}">
 			<div class="input_block">
 				<label for="balance-input">Баланс счёта:</label>
-				<fmt:formatNumber var="balance_kopecks" value="${account.balance mod 100}" pattern="##"/>
+				<fmt:formatNumber var="balance_kopecks" value="${account.balance mod 100}" pattern="00"/>
 				<fmt:formatNumber var="balance_rubles" value="${(account.balance - balance_kopecks) div 100}"/>
-				<input type="text" id="balance-input" value="${balance_rubles} руб. ${balance_kopecks} коп." disabled>
+				<input type="text" id="balance-input" value="${balance_rubles} руб. ${balance_kopecks} коп." disabled class="balance">
 			</div>
 			<div class="input_block">
 				<label>

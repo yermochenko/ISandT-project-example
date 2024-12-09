@@ -13,3 +13,11 @@
 .secondary-background {
 	background: #29F;
 }
+
+.balance {
+	font-family: Consolas, monospace;
+}
+
+td.balance {
+	text-align: right;
+}
