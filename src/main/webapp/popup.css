@@ -1,0 +1,46 @@
+.popup-message {
+	position: absolute;
+	width: 50%;
+	margin: 3.5em 25%;
+	padding: 0.75em;
+	background: #EEEB;
+	border: 1px solid #EB4;
+	border-radius: 0.25em;
+}
+
+.popup-message button {
+	float: right;
+	background: transparent;
+	border: 0;
+	color: #EB4;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.popup-message-in {
+	animation-name: popup_message_appearance;
+	animation-duration: 0.5s;
+}
+
+.popup-message-out {
+	animation-name: popup_message_disappearance;
+	animation-duration: 0.51s;
+}
+
+@keyframes popup_message_appearance {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes popup_message_disappearance {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}

@@ -20,6 +20,17 @@ public class ServiceContainer implements AutoCloseable {
 		return accountService;
 	}
 
+	private TransferService transferService;
+	public TransferService getTransferServiceInstance() throws SQLException {
+		if(transferService == null) {
+			transferService = new TransferService();
+			transferService.setTransactionManager(getTransactionManagerInstance());
+			transferService.setAccountRepository(getAccountRepositoryInstance());
+			transferService.setTransferRepository(getTransferRepositoryInstance());
+		}
+		return transferService;
+	}
+
 	private TransactionManager transactionManager;
 	private TransactionManager getTransactionManagerInstance() throws SQLException {
 		if(transactionManager == null) {

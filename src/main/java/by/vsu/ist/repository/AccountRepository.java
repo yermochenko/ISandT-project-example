@@ -75,6 +75,30 @@ public class AccountRepository extends BaseRepository {
 		}
 	}
 
+	public Optional<Account> readByNumber(String number) throws SQLException {
+		String sql = "SELECT \"id\", \"number\", \"owner\", \"balance\", \"active\" FROM \"account\" WHERE \"number\" = ?";
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			statement = getConnection().prepareStatement(sql);
+			statement.setString(1, number);
+			resultSet = statement.executeQuery();
+			Account account = null;
+			if(resultSet.next()) {
+				account = new Account();
+				account.setId(resultSet.getLong("id"));
+				account.setNumber(resultSet.getString("number"));
+				account.setOwner(resultSet.getString("owner"));
+				account.setBalance(resultSet.getLong("balance"));
+				account.setActive(resultSet.getBoolean("active"));
+			}
+			return Optional.ofNullable(account);
+		} finally {
+			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
+			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
+		}
+	}
+
 	public Optional<Account> read(Long id) throws SQLException {
 		String sql = "SELECT \"id\", \"number\", \"owner\", \"balance\", \"active\" FROM \"account\" WHERE \"id\" = ?";
 		PreparedStatement statement = null;
