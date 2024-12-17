@@ -24,8 +24,8 @@ public class CashWithdrawController extends HttpServlet {
 			String accountNumber = req.getParameter("account");
 			if(accountNumber == null || accountNumber.isBlank()) throw new IllegalArgumentException();
 			long sum = SumRequestParser.parse(req);
-			try(ServiceContainer container = new ServiceContainer()) {
-				TransferService transferService = container.getTransferServiceInstance();
+			try(ServiceFactory factory = ServiceFactory.getInstance()) {
+				TransferService transferService = factory.getTransferServiceInstance();
 				transferService.withdrawCash(accountNumber, sum);
 				resp.sendRedirect(
 				    req.getContextPath()

@@ -28,8 +28,8 @@ public class TransferController extends HttpServlet {
 			long sum = SumRequestParser.parse(req);
 			String purpose = req.getParameter("purpose");
 			if(purpose != null && purpose.isBlank()) purpose = null;
-			try(ServiceContainer container = new ServiceContainer()) {
-				TransferService transferService = container.getTransferServiceInstance();
+			try(ServiceFactory factory = ServiceFactory.getInstance()) {
+				TransferService transferService = factory.getTransferServiceInstance();
 				transferService.transfer(senderNumber, receiverNumber, sum, purpose);
 				resp.sendRedirect(
 				    req.getContextPath()

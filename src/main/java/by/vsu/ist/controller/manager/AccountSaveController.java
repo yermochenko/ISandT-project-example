@@ -2,7 +2,7 @@ package by.vsu.ist.controller.manager;
 
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.service.AccountService;
-import by.vsu.ist.service.ServiceContainer;
+import by.vsu.ist.service.ServiceFactory;
 import by.vsu.ist.service.exception.ServiceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -30,8 +30,8 @@ public class AccountSaveController extends HttpServlet {
 			String owner = req.getParameter("owner");
 			if(owner == null) throw new IllegalArgumentException();
 			account.setOwner(owner);
-			try(ServiceContainer container = new ServiceContainer()) {
-				AccountService accountService = container.getAccountServiceInstance();
+			try(ServiceFactory factory = ServiceFactory.getInstance()) {
+				AccountService accountService = factory.getAccountServiceInstance();
 				accountService.save(account);
 				resp.sendRedirect(req.getContextPath() + "/manager/account/list.html");
 			} catch(ServiceException e) {

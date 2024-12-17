@@ -1,7 +1,7 @@
 package by.vsu.ist.controller.manager;
 
 import by.vsu.ist.service.AccountService;
-import by.vsu.ist.service.ServiceContainer;
+import by.vsu.ist.service.ServiceFactory;
 import by.vsu.ist.service.exception.ServiceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,8 +17,8 @@ public class AccountDeleteController extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
 			Long id = Long.parseLong(req.getParameter("id"));
-			try(ServiceContainer container = new ServiceContainer()) {
-				AccountService accountService = container.getAccountServiceInstance();
+			try(ServiceFactory factory = ServiceFactory.getInstance()) {
+				AccountService accountService = factory.getAccountServiceInstance();
 				accountService.delete(id).orElseThrow(IllegalArgumentException::new);
 				resp.sendRedirect(req.getContextPath() + "/manager/account/list.html");
 			} catch(ServiceException e) {

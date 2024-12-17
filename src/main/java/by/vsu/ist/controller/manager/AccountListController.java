@@ -2,7 +2,7 @@ package by.vsu.ist.controller.manager;
 
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.service.AccountService;
-import by.vsu.ist.service.ServiceContainer;
+import by.vsu.ist.service.ServiceFactory;
 import by.vsu.ist.service.exception.ServiceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,8 +16,8 @@ import java.util.List;
 @WebServlet("/manager/account/list.html")
 public class AccountListController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		try(ServiceContainer container = new ServiceContainer()) {
-			AccountService accountService = container.getAccountServiceInstance();
+		try(ServiceFactory factory = ServiceFactory.getInstance()) {
+			AccountService accountService = factory.getAccountServiceInstance();
 			List<Account> accounts = accountService.findAll();
 			req.setAttribute("accounts", accounts);
 			req.getRequestDispatcher("/WEB-INF/jsp/manager/account/list.jsp").forward(req, resp);

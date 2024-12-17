@@ -1,10 +1,10 @@
 package by.vsu.ist.service;
 
 import by.vsu.ist.repository.AccountRepository;
-import by.vsu.ist.repository.jdbc.AccountRepositoryImpl;
-import by.vsu.ist.repository.jdbc.DatabaseConnector;
 import by.vsu.ist.repository.TransactionManager;
 import by.vsu.ist.repository.TransferRepository;
+import by.vsu.ist.repository.jdbc.AccountRepositoryImpl;
+import by.vsu.ist.repository.jdbc.DatabaseConnector;
 import by.vsu.ist.repository.jdbc.TransactionManagerImpl;
 import by.vsu.ist.repository.jdbc.TransferRepositoryImpl;
 import by.vsu.ist.service.exception.ServiceException;
@@ -12,7 +12,7 @@ import by.vsu.ist.service.exception.ServiceException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ServiceContainer implements AutoCloseable {
+public class ServiceFactoryImpl implements ServiceFactory {
 	private AccountService accountService;
 	public AccountService getAccountServiceInstance() throws ServiceException {
 		if(accountService == null) {
