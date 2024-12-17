@@ -2,6 +2,7 @@ package by.vsu.ist.repository.jdbc;
 
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.repository.AccountRepository;
+import by.vsu.ist.repository.RepositoryException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 public class AccountRepositoryImpl extends BaseRepository implements AccountRepository {
 	@Override
-	public Long create(Account account) throws SQLException {
+	public Long create(Account account) throws RepositoryException {
 		String sql = "INSERT INTO \"account\"(\"number\", \"owner\") VALUES (?, ?)";
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -26,6 +27,8 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 			resultSet = statement.getGeneratedKeys();
 			resultSet.next();
 			return resultSet.getLong(1);
+		} catch(SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
@@ -33,7 +36,7 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 	}
 
 	@Override
-	public List<Account> readAll() throws SQLException {
+	public List<Account> readAll() throws RepositoryException {
 		String sql = "SELECT \"id\", \"number\", \"owner\", \"balance\", \"active\" FROM \"account\"";
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -51,6 +54,8 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 				accounts.add(account);
 			}
 			return accounts;
+		} catch(SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
@@ -58,7 +63,7 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 	}
 
 	@Override
-	public List<Account> readActive() throws SQLException {
+	public List<Account> readActive() throws RepositoryException {
 		String sql = "SELECT \"id\", \"number\", \"owner\", \"balance\", \"active\" FROM \"account\" WHERE \"active\" = TRUE";
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -76,6 +81,8 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 				accounts.add(account);
 			}
 			return accounts;
+		} catch(SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
@@ -83,7 +90,7 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 	}
 
 	@Override
-	public Optional<Account> readByNumber(String number) throws SQLException {
+	public Optional<Account> readByNumber(String number) throws RepositoryException {
 		String sql = "SELECT \"id\", \"number\", \"owner\", \"balance\", \"active\" FROM \"account\" WHERE \"number\" = ?";
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -101,6 +108,8 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 				account.setActive(resultSet.getBoolean("active"));
 			}
 			return Optional.ofNullable(account);
+		} catch(SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
@@ -108,7 +117,7 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 	}
 
 	@Override
-	public Optional<Account> read(Long id) throws SQLException {
+	public Optional<Account> read(Long id) throws RepositoryException {
 		String sql = "SELECT \"id\", \"number\", \"owner\", \"balance\", \"active\" FROM \"account\" WHERE \"id\" = ?";
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -126,6 +135,8 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 				account.setActive(resultSet.getBoolean("active"));
 			}
 			return Optional.ofNullable(account);
+		} catch(SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
@@ -133,7 +144,7 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 	}
 
 	@Override
-	public void update(Account account) throws SQLException {
+	public void update(Account account) throws RepositoryException {
 		String sql = "UPDATE \"account\" SET \"number\" = ?, \"owner\" = ?, \"balance\" = ?, \"active\" = ? WHERE \"id\" = ?";
 		PreparedStatement statement = null;
 		try {
@@ -144,19 +155,23 @@ public class AccountRepositoryImpl extends BaseRepository implements AccountRepo
 			statement.setBoolean(4, account.isActive());
 			statement.setLong(5, account.getId());
 			statement.executeUpdate();
+		} catch(SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
 		}
 	}
 
 	@Override
-	public void delete(Long id) throws SQLException {
+	public void delete(Long id) throws RepositoryException {
 		String sql = "DELETE FROM \"account\" WHERE \"id\" = ?";
 		PreparedStatement statement = null;
 		try {
 			statement = getConnection().prepareStatement(sql);
 			statement.setLong(1, id);
 			statement.executeUpdate();
+		} catch(SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
 		}

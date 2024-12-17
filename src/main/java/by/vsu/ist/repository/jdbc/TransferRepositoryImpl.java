@@ -2,6 +2,7 @@ package by.vsu.ist.repository.jdbc;
 
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.domain.Transfer;
+import by.vsu.ist.repository.RepositoryException;
 import by.vsu.ist.repository.TransferRepository;
 
 import java.sql.*;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 public class TransferRepositoryImpl extends BaseRepository implements TransferRepository {
 	@Override
-	public Long create(Transfer transfer) throws SQLException {
+	public Long create(Transfer transfer) throws RepositoryException {
 		String sql = "INSERT INTO \"transfer\"(\"sender_id\", \"receiver_id\", \"sum\", \"purpose\") VALUES (?, ?, ?, ?)";
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -41,6 +42,8 @@ public class TransferRepositoryImpl extends BaseRepository implements TransferRe
 			resultSet = statement.getGeneratedKeys();
 			resultSet.next();
 			return resultSet.getLong(1);
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
@@ -48,7 +51,7 @@ public class TransferRepositoryImpl extends BaseRepository implements TransferRe
 	}
 
 	@Override
-	public List<Transfer> readByAccount(Long accountId) throws SQLException {
+	public List<Transfer> readByAccount(Long accountId) throws RepositoryException {
 		String sql = "SELECT \"id\", \"sender_id\", \"receiver_id\", \"sum\", \"date\", \"purpose\" FROM \"transfer\" WHERE \"sender_id\" = ? OR \"receiver_id\" = ? ORDER BY \"date\" DESC";
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -79,6 +82,8 @@ public class TransferRepositoryImpl extends BaseRepository implements TransferRe
 				transfers.add(transfer);
 			}
 			return transfers;
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
@@ -86,7 +91,7 @@ public class TransferRepositoryImpl extends BaseRepository implements TransferRe
 	}
 
 	@Override
-	public Optional<Transfer> read(Long id) throws SQLException {
+	public Optional<Transfer> read(Long id) throws RepositoryException {
 		String sql = "SELECT \"id\", \"sender_id\", \"receiver_id\", \"sum\", \"date\", \"purpose\" FROM \"transfer\" WHERE \"id\" = ?";
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
@@ -115,6 +120,8 @@ public class TransferRepositoryImpl extends BaseRepository implements TransferRe
 				transfer.setPurpose(resultSet.getString("purpose"));
 			}
 			return Optional.ofNullable(transfer);
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
 			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}

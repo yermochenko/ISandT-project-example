@@ -3,9 +3,8 @@ package by.vsu.ist.service;
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.domain.Transfer;
 import by.vsu.ist.repository.AccountRepository;
+import by.vsu.ist.repository.RepositoryException;
 import by.vsu.ist.repository.TransferRepository;
-
-import java.sql.SQLException;
 
 public class TransferServiceImpl extends BaseServiceImpl implements TransferService {
 	private AccountRepository accountRepository;
@@ -20,12 +19,11 @@ public class TransferServiceImpl extends BaseServiceImpl implements TransferServ
 	}
 
 	@Override
-	public void withdrawCash(String accountNumber, Long sum) throws SQLException {
-		getTransactionManager().startTransaction();
+	public void withdrawCash(String accountNumber, Long sum) throws ServiceException {
 		try {
-			Account account = accountRepository.readByNumber(accountNumber).orElseThrow(() -> new IllegalArgumentException("Account not found"));
-			if(!account.isActive()) throw new IllegalArgumentException("Account is not active");
-			if(sum > account.getBalance()) throw new IllegalArgumentException("Not enough money");
+			getTransactionManager().startTransaction();
+			Account account = getAccount(accountNumber);
+			if(sum > account.getBalance()) throw new InsufficientAccountFundsServiceException(account, sum);
 			account.setBalance(account.getBalance() - sum);
 			accountRepository.update(account);
 			Transfer transfer = new Transfer();
@@ -33,18 +31,20 @@ public class TransferServiceImpl extends BaseServiceImpl implements TransferServ
 			transfer.setSum(sum);
 			transferRepository.create(transfer);
 			getTransactionManager().commitTransaction();
-		} catch(SQLException | IllegalArgumentException e) {
-			getTransactionManager().rollbackTransaction();
+		} catch(RepositoryException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+			throw new ServiceException(e);
+		} catch(ServiceException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
 			throw e;
 		}
 	}
 
 	@Override
-	public void depositCash(String accountNumber, Long sum) throws SQLException {
-		getTransactionManager().startTransaction();
+	public void depositCash(String accountNumber, Long sum) throws ServiceException {
 		try {
-			Account account = accountRepository.readByNumber(accountNumber).orElseThrow(() -> new IllegalArgumentException("Account not found"));
-			if(!account.isActive()) throw new IllegalArgumentException("Account is not active");
+			getTransactionManager().startTransaction();
+			Account account = getAccount(accountNumber);
 			account.setBalance(account.getBalance() + sum);
 			accountRepository.update(account);
 			Transfer transfer = new Transfer();
@@ -52,21 +52,22 @@ public class TransferServiceImpl extends BaseServiceImpl implements TransferServ
 			transfer.setSum(sum);
 			transferRepository.create(transfer);
 			getTransactionManager().commitTransaction();
-		} catch(SQLException | IllegalArgumentException e) {
-			getTransactionManager().rollbackTransaction();
+		} catch(RepositoryException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+			throw new ServiceException(e);
+		} catch(ServiceException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
 			throw e;
 		}
 	}
 
 	@Override
-	public void transfer(String senderNumber, String receiverNumber, Long sum, String purpose) throws SQLException {
-		getTransactionManager().startTransaction();
+	public void transfer(String senderNumber, String receiverNumber, Long sum, String purpose) throws ServiceException {
 		try {
-			Account sender = accountRepository.readByNumber(senderNumber).orElseThrow(() -> new IllegalArgumentException("Sender not found"));
-			if(!sender.isActive()) throw new IllegalArgumentException("Sender is not active");
-			Account receiver = accountRepository.readByNumber(receiverNumber).orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
-			if(!receiver.isActive()) throw new IllegalArgumentException("Receiver is not active");
-			if(sum > sender.getBalance()) throw new IllegalArgumentException("Not enough money");
+			getTransactionManager().startTransaction();
+			Account sender = getAccount(senderNumber);
+			Account receiver = getAccount(receiverNumber);
+			if(sum > sender.getBalance()) throw new InsufficientAccountFundsServiceException(sender, sum);
 			sender.setBalance(sender.getBalance() - sum);
 			accountRepository.update(sender);
 			receiver.setBalance(receiver.getBalance() + sum);
@@ -78,9 +79,18 @@ public class TransferServiceImpl extends BaseServiceImpl implements TransferServ
 			transfer.setPurpose(purpose);
 			transferRepository.create(transfer);
 			getTransactionManager().commitTransaction();
-		} catch(SQLException | IllegalArgumentException e) {
-			getTransactionManager().rollbackTransaction();
+		} catch(RepositoryException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+			throw new ServiceException(e);
+		} catch(ServiceException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
 			throw e;
 		}
+	}
+
+	private Account getAccount(String number) throws RepositoryException, ServiceException {
+		Account account = accountRepository.readByNumber(number).orElseThrow(() -> new AccountNotExistsServiceException(number));
+		if(!account.isActive()) throw new AccountNotActiveServiceException(account);
+		return account;
 	}
 }

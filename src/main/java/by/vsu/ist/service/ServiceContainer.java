@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class ServiceContainer implements AutoCloseable {
 	private AccountService accountService;
-	public AccountService getAccountServiceInstance() throws SQLException {
+	public AccountService getAccountServiceInstance() throws ServiceException {
 		if(accountService == null) {
 			AccountServiceImpl accountService = new AccountServiceImpl();
 			accountService.setTransactionManager(getTransactionManagerInstance());
@@ -25,7 +25,7 @@ public class ServiceContainer implements AutoCloseable {
 	}
 
 	private TransferService transferService;
-	public TransferService getTransferServiceInstance() throws SQLException {
+	public TransferService getTransferServiceInstance() throws ServiceException {
 		if(transferService == null) {
 			TransferServiceImpl transferService = new TransferServiceImpl();
 			transferService.setTransactionManager(getTransactionManagerInstance());
@@ -37,7 +37,7 @@ public class ServiceContainer implements AutoCloseable {
 	}
 
 	private TransactionManager transactionManager;
-	private TransactionManager getTransactionManagerInstance() throws SQLException {
+	private TransactionManager getTransactionManagerInstance() throws ServiceException {
 		if(transactionManager == null) {
 			TransactionManagerImpl transactionManager = new TransactionManagerImpl();
 			transactionManager.setConnection(getConnectionInstance());
@@ -47,7 +47,7 @@ public class ServiceContainer implements AutoCloseable {
 	}
 
 	private AccountRepository accountRepository;
-	private AccountRepository getAccountRepositoryInstance() throws SQLException {
+	private AccountRepository getAccountRepositoryInstance() throws ServiceException {
 		if(accountRepository == null) {
 			AccountRepositoryImpl accountRepository = new AccountRepositoryImpl();
 			accountRepository.setConnection(getConnectionInstance());
@@ -57,7 +57,7 @@ public class ServiceContainer implements AutoCloseable {
 	}
 
 	private TransferRepository transferRepository;
-	private TransferRepository getTransferRepositoryInstance() throws SQLException {
+	private TransferRepository getTransferRepositoryInstance() throws ServiceException {
 		if(transferRepository == null) {
 			TransferRepositoryImpl transferRepository = new TransferRepositoryImpl();
 			transferRepository.setConnection(getConnectionInstance());
@@ -67,9 +67,13 @@ public class ServiceContainer implements AutoCloseable {
 	}
 
 	private Connection connection;
-	private Connection getConnectionInstance() throws SQLException {
+	private Connection getConnectionInstance() throws ServiceException {
 		if(connection == null) {
-			connection = DatabaseConnector.getConnection();
+			try {
+				connection = DatabaseConnector.getConnection();
+			} catch(SQLException e) {
+				throw new ServiceException(e);
+			}
 		}
 		return connection;
 	}

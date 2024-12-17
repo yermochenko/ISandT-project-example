@@ -1,5 +1,6 @@
 package by.vsu.ist.repository.jdbc;
 
+import by.vsu.ist.repository.RepositoryException;
 import by.vsu.ist.repository.TransactionManager;
 
 import java.sql.Connection;
@@ -13,14 +14,20 @@ public class TransactionManagerImpl implements TransactionManager {
 	}
 
 	@Override
-	public void startTransaction() throws SQLException {
-		connection.setAutoCommit(false);
+	public void startTransaction() throws RepositoryException {
+		try {
+			connection.setAutoCommit(false);
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
+		}
 	}
 
 	@Override
-	public void commitTransaction() throws SQLException {
+	public void commitTransaction() throws RepositoryException {
 		try {
 			connection.commit();
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try {
 				connection.setAutoCommit(true);
@@ -31,9 +38,11 @@ public class TransactionManagerImpl implements TransactionManager {
 	}
 
 	@Override
-	public void rollbackTransaction() throws SQLException {
+	public void rollbackTransaction() throws RepositoryException {
 		try {
 			connection.rollback();
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
 		} finally {
 			try {
 				connection.setAutoCommit(true);

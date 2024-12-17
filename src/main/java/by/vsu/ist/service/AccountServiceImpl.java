@@ -3,9 +3,9 @@ package by.vsu.ist.service;
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.domain.Transfer;
 import by.vsu.ist.repository.AccountRepository;
+import by.vsu.ist.repository.RepositoryException;
 import by.vsu.ist.repository.TransferRepository;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,30 +24,34 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 	}
 
 	@Override
-	public List<Account> findAll() throws SQLException {
-		return accountRepository.readAll();
+	public List<Account> findAll() throws ServiceException {
+		try {
+			return accountRepository.readAll();
+		} catch(RepositoryException e) {
+			throw new ServiceException(e);
+		}
 	}
 
 	@Override
-	public List<Account> findActive() throws SQLException {
-		getTransactionManager().startTransaction();
+	public List<Account> findActive() throws ServiceException {
 		try {
+			getTransactionManager().startTransaction();
 			List<Account> accounts = accountRepository.readActive();
 			for(Account account : accounts) {
 				account.setTransfers(transferRepository.readByAccount(account.getId()));
 			}
 			getTransactionManager().commitTransaction();
 			return accounts;
-		} catch(SQLException e) {
-			getTransactionManager().rollbackTransaction();
-			throw e;
+		} catch(RepositoryException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+			throw new ServiceException(e);
 		}
 	}
 
 	@Override
-	public Optional<Account> findById(Long id) throws SQLException {
-		getTransactionManager().startTransaction();
+	public Optional<Account> findById(Long id) throws ServiceException {
 		try {
+			getTransactionManager().startTransaction();
 			Optional<Account> account = accountRepository.read(id);
 			if(account.isPresent()) {
 				List<Transfer> transfers = transferRepository.readByAccount(id);
@@ -55,16 +59,16 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 			}
 			getTransactionManager().commitTransaction();
 			return account;
-		} catch(SQLException e) {
-			getTransactionManager().rollbackTransaction();
-			throw e;
+		} catch(RepositoryException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+			throw new ServiceException(e);
 		}
 	}
 
 	@Override
-	public Optional<Account> findByIdWithTransfers(Long id) throws SQLException {
-		getTransactionManager().startTransaction();
+	public Optional<Account> findByIdWithTransfers(Long id) throws ServiceException {
 		try {
+			getTransactionManager().startTransaction();
 			Optional<Account> account = accountRepository.read(id);
 			if(account.isPresent()) {
 				List<Transfer> transfers = transferRepository.readByAccount(id);
@@ -78,48 +82,52 @@ public class AccountServiceImpl extends BaseServiceImpl implements AccountServic
 			}
 			getTransactionManager().commitTransaction();
 			return account;
-		} catch(SQLException e) {
-			getTransactionManager().rollbackTransaction();
-			throw e;
+		} catch(RepositoryException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+			throw new ServiceException(e);
 		}
 	}
 
 	@Override
-	public void save(Account account) throws SQLException {
+	public void save(Account account) throws ServiceException {
 		if(account.getId() != null) {
-			getTransactionManager().startTransaction();
 			try {
+				getTransactionManager().startTransaction();
 				Account storedAccount = accountRepository.read(account.getId()).orElseThrow();
 				storedAccount.setOwner(account.getOwner());
 				storedAccount.setActive(account.isActive());
 				accountRepository.update(storedAccount);
 				getTransactionManager().commitTransaction();
-			} catch(SQLException e) {
-				getTransactionManager().rollbackTransaction();
-				throw e;
+			} catch(RepositoryException e) {
+				try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+				throw new ServiceException(e);
 			}
 		} else {
-			accountRepository.create(account);
+			try {
+				accountRepository.create(account);
+			} catch(RepositoryException e) {
+				throw new ServiceException(e);
+			}
 		}
 	}
 
 	@Override
-	public Optional<Account> delete(Long id) throws SQLException {
-		getTransactionManager().startTransaction();
+	public Optional<Account> delete(Long id) throws ServiceException {
 		try {
+			getTransactionManager().startTransaction();
 			Optional<Account> account = accountRepository.read(id);
 			if(account.isPresent()) {
 				accountRepository.delete(id);
 			}
 			getTransactionManager().commitTransaction();
 			return account;
-		} catch(SQLException e) {
-			getTransactionManager().rollbackTransaction();
-			throw e;
+		} catch(RepositoryException e) {
+			try { getTransactionManager().rollbackTransaction(); } catch(RepositoryException ignored) {}
+			throw new ServiceException(e);
 		}
 	}
 
-	private Account restore(Map<Long, Account> cache, Account account) throws SQLException {
+	private Account restore(Map<Long, Account> cache, Account account) throws RepositoryException {
 		if(account != null) {
 			Long id = account.getId();
 			Account cachedAccount = cache.get(id);

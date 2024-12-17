@@ -1,7 +1,6 @@
 package by.vsu.ist.controller.cashier;
 
-import by.vsu.ist.service.ServiceContainer;
-import by.vsu.ist.service.TransferService;
+import by.vsu.ist.service.*;
 import by.vsu.ist.web.SumRequestParser;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 @WebServlet("/cashier/cash/deposit.html")
 public class CashDepositController extends HttpServlet {
@@ -25,8 +23,30 @@ public class CashDepositController extends HttpServlet {
 			try(ServiceContainer container = new ServiceContainer()) {
 				TransferService transferService = container.getTransferServiceInstance();
 				transferService.depositCash(accountNumber, sum);
-				resp.sendRedirect(req.getContextPath() + "/cashier/account/list.html?msg=" + URLEncoder.encode("Операция выполнена успешно", StandardCharsets.UTF_8));
-			} catch(SQLException e) {
+				resp.sendRedirect(
+				    req.getContextPath()
+				    + "/cashier/account/list.html?msg="
+				    + URLEncoder.encode("Операция выполнена успешно", StandardCharsets.UTF_8)
+				);
+			} catch(AccountNotExistsServiceException e) {
+				resp.sendRedirect(
+				    req.getContextPath()
+				    + "/cashier/account/list.html?msg="
+				    + URLEncoder.encode(String.format(
+				        "Счёт с номером %s не существует",
+				        e.getAccountNumber()
+				    ), StandardCharsets.UTF_8)
+				);
+			} catch(AccountNotActiveServiceException e) {
+				resp.sendRedirect(
+				    req.getContextPath()
+				    + "/cashier/account/list.html?msg="
+				    + URLEncoder.encode(String.format(
+				        "Счёт с номером %s не активен. Операции по этому счёту невозможны",
+				        e.getAccount().getNumber()
+				    ), StandardCharsets.UTF_8))
+				;
+			} catch(ServiceException e) {
 				throw new ServletException(e);
 			}
 		} catch(IllegalArgumentException e) {

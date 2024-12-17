@@ -3,6 +3,7 @@ package by.vsu.ist.controller.manager;
 import by.vsu.ist.domain.Account;
 import by.vsu.ist.service.AccountService;
 import by.vsu.ist.service.ServiceContainer;
+import by.vsu.ist.service.ServiceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Optional;
 
 @WebServlet("/manager/account/edit.html")
@@ -25,7 +25,7 @@ public class AccountEditController extends HttpServlet {
 				AccountService accountService = container.getAccountServiceInstance();
 				Optional<Account> account = accountService.findById(id);
 				account.ifPresent(value -> req.setAttribute("account", value));
-			} catch(SQLException e) {
+			} catch(ServiceException e) {
 				throw new ServletException(e);
 			}
 		}

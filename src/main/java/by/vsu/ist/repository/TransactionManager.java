@@ -1,11 +1,9 @@
 package by.vsu.ist.repository;
 
-import java.sql.SQLException;
-
 public interface TransactionManager {
-	void startTransaction() throws SQLException;
+	void startTransaction() throws RepositoryException;
 
-	void commitTransaction() throws SQLException;
+	void commitTransaction() throws RepositoryException;
 
-	void rollbackTransaction() throws SQLException;
+	void rollbackTransaction() throws RepositoryException;
 }
