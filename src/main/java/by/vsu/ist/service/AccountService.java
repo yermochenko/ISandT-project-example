@@ -98,6 +98,21 @@ public class AccountService extends BaseService {
 		}
 	}
 
+	public Optional<Account> delete(Long id) throws SQLException {
+		getTransactionManager().startTransaction();
+		try {
+			Optional<Account> account = accountRepository.read(id);
+			if(account.isPresent()) {
+				accountRepository.delete(id);
+			}
+			getTransactionManager().commitTransaction();
+			return account;
+		} catch(SQLException e) {
+			getTransactionManager().rollbackTransaction();
+			throw e;
+		}
+	}
+
 	private Account restore(Map<Long, Account> cache, Account account) throws SQLException {
 		if(account != null) {
 			Long id = account.getId();

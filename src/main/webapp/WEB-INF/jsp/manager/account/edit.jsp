@@ -72,8 +72,20 @@
 			<button type="submit" class="button button__primary">Сохранить</button>
 			<c:url var="url__manager_account_list" value="${'/manager/account/list.html'}"/>
 			<a href="${url__manager_account_list}" class="button button__secondary">Назад</a>
+			<c:if test="${not empty account}">
+				<c:if test="${not empty account.transfers}">
+					<c:set var="disabled" value="disabled"/>
+				</c:if>
+				<button type="submit" form="delete-form" class="button button__danger" ${disabled}>Удалить</button>
+			</c:if>
 		</div>
 	</form>
+	<c:if test="${not empty account}">
+		<c:url var="url__manager_account_delete" value="${'/manager/account/delete.html'}"/>
+		<form id="delete-form" action="${url__manager_account_delete}" method="post">
+			<input type="hidden" name="id" value="${account.id}">
+		</form>
+	</c:if>
 </div>
 </body>
 </html>
