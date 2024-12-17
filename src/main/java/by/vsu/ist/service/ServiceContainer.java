@@ -15,10 +15,11 @@ public class ServiceContainer implements AutoCloseable {
 	private AccountService accountService;
 	public AccountService getAccountServiceInstance() throws SQLException {
 		if(accountService == null) {
-			accountService = new AccountService();
+			AccountServiceImpl accountService = new AccountServiceImpl();
 			accountService.setTransactionManager(getTransactionManagerInstance());
 			accountService.setAccountRepository(getAccountRepositoryInstance());
 			accountService.setTransferRepository(getTransferRepositoryInstance());
+			this.accountService = accountService;
 		}
 		return accountService;
 	}
@@ -26,10 +27,11 @@ public class ServiceContainer implements AutoCloseable {
 	private TransferService transferService;
 	public TransferService getTransferServiceInstance() throws SQLException {
 		if(transferService == null) {
-			transferService = new TransferService();
+			TransferServiceImpl transferService = new TransferServiceImpl();
 			transferService.setTransactionManager(getTransactionManagerInstance());
 			transferService.setAccountRepository(getAccountRepositoryInstance());
 			transferService.setTransferRepository(getTransferRepositoryInstance());
+			this.transferService = transferService;
 		}
 		return transferService;
 	}
