@@ -1,4 +1,4 @@
-package by.vsu.ist.service;
+package by.vsu.ist.service.exception;
 
 import by.vsu.ist.domain.Account;
 

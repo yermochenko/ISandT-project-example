@@ -1,4 +1,4 @@
-package by.vsu.ist.service;
+package by.vsu.ist.service.exception;
 
 public class AccountNotExistsServiceException extends ServiceException {
 	private final String accountNumber;

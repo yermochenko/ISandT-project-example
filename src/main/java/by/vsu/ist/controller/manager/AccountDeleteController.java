@@ -2,7 +2,7 @@ package by.vsu.ist.controller.manager;
 
 import by.vsu.ist.service.AccountService;
 import by.vsu.ist.service.ServiceContainer;
-import by.vsu.ist.service.ServiceException;
+import by.vsu.ist.service.exception.ServiceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

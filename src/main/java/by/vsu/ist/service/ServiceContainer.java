@@ -7,6 +7,7 @@ import by.vsu.ist.repository.TransactionManager;
 import by.vsu.ist.repository.TransferRepository;
 import by.vsu.ist.repository.jdbc.TransactionManagerImpl;
 import by.vsu.ist.repository.jdbc.TransferRepositoryImpl;
+import by.vsu.ist.service.exception.ServiceException;
 
 import java.sql.Connection;
 import java.sql.SQLException;

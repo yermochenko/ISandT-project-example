@@ -1,6 +1,7 @@
 package by.vsu.ist.service;
 
 import by.vsu.ist.domain.Account;
+import by.vsu.ist.service.exception.ServiceException;
 
 import java.util.List;
 import java.util.Optional;

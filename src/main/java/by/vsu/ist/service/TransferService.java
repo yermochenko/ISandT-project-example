@@ -1,5 +1,7 @@
 package by.vsu.ist.service;
 
+import by.vsu.ist.service.exception.ServiceException;
+
 public interface TransferService {
 	void withdrawCash(String accountNumber, Long sum) throws ServiceException;
 
