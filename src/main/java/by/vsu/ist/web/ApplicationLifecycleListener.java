@@ -1,6 +1,8 @@
 package by.vsu.ist.web;
 
 import by.vsu.ist.repository.jdbc.DatabaseConnector;
+import by.vsu.ist.repository.jdbc.cp.ConnectionPool;
+import by.vsu.ist.repository.jdbc.cp.ConnectionPoolException;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -16,9 +18,16 @@ public class ApplicationLifecycleListener implements ServletContextListener {
 			String jdbcUrl      = context.getInitParameter("jdbc-url");
 			String jdbcUser     = context.getInitParameter("jdbc-user");
 			String jdbcPassword = context.getInitParameter("jdbc-password");
+			int poolSize = Integer.parseInt(context.getInitParameter("connection-pool-size"));
 			DatabaseConnector.init(jdbcDriver, jdbcUrl, jdbcUser, jdbcPassword);
-		} catch(ClassNotFoundException e) {
+			ConnectionPool.getInstance().init(poolSize);
+		} catch(ClassNotFoundException | ConnectionPoolException | NumberFormatException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
+		ConnectionPool.getInstance().destroy();
 	}
 }

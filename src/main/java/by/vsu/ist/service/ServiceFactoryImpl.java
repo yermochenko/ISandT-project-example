@@ -4,9 +4,10 @@ import by.vsu.ist.repository.AccountRepository;
 import by.vsu.ist.repository.TransactionManager;
 import by.vsu.ist.repository.TransferRepository;
 import by.vsu.ist.repository.jdbc.AccountRepositoryImpl;
-import by.vsu.ist.repository.jdbc.DatabaseConnector;
 import by.vsu.ist.repository.jdbc.TransactionManagerImpl;
 import by.vsu.ist.repository.jdbc.TransferRepositoryImpl;
+import by.vsu.ist.repository.jdbc.cp.ConnectionPool;
+import by.vsu.ist.repository.jdbc.cp.ConnectionPoolException;
 import by.vsu.ist.service.exception.ServiceException;
 
 import java.sql.Connection;
@@ -71,8 +72,8 @@ public class ServiceFactoryImpl implements ServiceFactory {
 	private Connection getConnectionInstance() throws ServiceException {
 		if(connection == null) {
 			try {
-				connection = DatabaseConnector.getConnection();
-			} catch(SQLException e) {
+				connection = ConnectionPool.getInstance().getConnection();
+			} catch(ConnectionPoolException e) {
 				throw new ServiceException(e);
 			}
 		}
