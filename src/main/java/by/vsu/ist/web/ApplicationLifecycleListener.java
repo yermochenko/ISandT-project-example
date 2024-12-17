@@ -1,6 +1,6 @@
 package by.vsu.ist.web;
 
-import by.vsu.ist.repository.DatabaseConnector;
+import by.vsu.ist.repository.jdbc.DatabaseConnector;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;

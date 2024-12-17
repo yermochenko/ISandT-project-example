@@ -1,4 +1,4 @@
-package by.vsu.ist.repository;
+package by.vsu.ist.repository.jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

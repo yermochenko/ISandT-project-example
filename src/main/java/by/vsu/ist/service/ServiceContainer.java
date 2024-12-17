@@ -1,9 +1,12 @@
 package by.vsu.ist.service;
 
 import by.vsu.ist.repository.AccountRepository;
-import by.vsu.ist.repository.DatabaseConnector;
+import by.vsu.ist.repository.jdbc.AccountRepositoryImpl;
+import by.vsu.ist.repository.jdbc.DatabaseConnector;
 import by.vsu.ist.repository.TransactionManager;
 import by.vsu.ist.repository.TransferRepository;
+import by.vsu.ist.repository.jdbc.TransactionManagerImpl;
+import by.vsu.ist.repository.jdbc.TransferRepositoryImpl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,8 +37,9 @@ public class ServiceContainer implements AutoCloseable {
 	private TransactionManager transactionManager;
 	private TransactionManager getTransactionManagerInstance() throws SQLException {
 		if(transactionManager == null) {
-			transactionManager = new TransactionManager();
+			TransactionManagerImpl transactionManager = new TransactionManagerImpl();
 			transactionManager.setConnection(getConnectionInstance());
+			this.transactionManager = transactionManager;
 		}
 		return transactionManager;
 	}
@@ -43,8 +47,9 @@ public class ServiceContainer implements AutoCloseable {
 	private AccountRepository accountRepository;
 	private AccountRepository getAccountRepositoryInstance() throws SQLException {
 		if(accountRepository == null) {
-			accountRepository = new AccountRepository();
+			AccountRepositoryImpl accountRepository = new AccountRepositoryImpl();
 			accountRepository.setConnection(getConnectionInstance());
+			this.accountRepository = accountRepository;
 		}
 		return accountRepository;
 	}
@@ -52,8 +57,9 @@ public class ServiceContainer implements AutoCloseable {
 	private TransferRepository transferRepository;
 	private TransferRepository getTransferRepositoryInstance() throws SQLException {
 		if(transferRepository == null) {
-			transferRepository = new TransferRepository();
+			TransferRepositoryImpl transferRepository = new TransferRepositoryImpl();
 			transferRepository.setConnection(getConnectionInstance());
+			this.transferRepository = transferRepository;
 		}
 		return transferRepository;
 	}
