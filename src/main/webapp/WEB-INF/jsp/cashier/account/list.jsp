@@ -1,27 +1,10 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
 <%@taglib prefix="fmt" uri="jakarta.tags.fmt"%>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-	<meta charset="UTF-8">
-	<title>Гринготтс :: Банковские счета</title>
-	<c:url var="url__style_css" value="${'/style.css'}"/>
-	<link rel="stylesheet" href="${url__style_css}">
-	<c:url var="url__style_cashier_css" value="${'/style-cashier.css'}"/>
-	<link rel="stylesheet" href="${url__style_cashier_css}">
-	<c:url var="url__popup_css" value="${'/popup.css'}"/>
-	<link rel="stylesheet" href="${url__popup_css}">
-	<c:url var="url__tabs_js" value="${'/tabs.js'}"/>
-	<script type="text/javascript" src="${url__tabs_js}"></script>
-	<c:url var="url__popup_js" value="${'/popup.js'}"/>
-	<script type="text/javascript" src="${url__popup_js}"></script>
-</head>
-<body>
-<div class="header primary-background">
-	<h1 class="header__title">Банк «Гринготтс»</h1>
-</div>
-<div class="content">
+<%@taglib prefix="u" tagdir="/WEB-INF/tags"%>
+<u:page title="Банковские счета"
+        css="${['/style-cashier.css', '/popup.css']}"
+        js="${['/tabs.js', '/popup.js']}">
 	<h2 class="page_title primary-color">Активные банковские счета</h2>
 	<div class="flex">
 		<div>
@@ -132,6 +115,4 @@
 	<c:if test="${not empty param['msg']}">
 		<script type="text/javascript">showMessage('${param['msg']}')</script>
 	</c:if>
-</div>
-</body>
-</html>
+</u:page>
