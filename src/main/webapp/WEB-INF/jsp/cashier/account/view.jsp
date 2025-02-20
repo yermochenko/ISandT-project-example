@@ -3,19 +3,7 @@
 <%@taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 <%@taglib prefix="u" tagdir="/WEB-INF/tags"%>
 <%--@elvariable id="account" type="by.vsu.ist.domain.Account"--%>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-	<meta charset="UTF-8">
-	<title>Гринготтс :: Операции по счёту ${account.number}</title>
-	<c:url var="url__style_css" value="${'/style.css'}"/>
-	<link rel="stylesheet" href="${url__style_css}">
-	<c:url var="url__style_cashier_css" value="${'/style-cashier.css'}"/>
-	<link rel="stylesheet" href="${url__style_cashier_css}">
-</head>
-<body>
-<u:header/>
-<div class="content">
+<u:page title="Гринготтс :: Операции по счёту ${account.number}" css="${['/style-cashier.css']}">
 	<h2 class="page_title primary-color">Операции по счёту ${account.number}</h2>
 	<c:url var="url__cashier_account_list" value="${'/cashier/account/list.html'}"/>
 	<p><a href="${url__cashier_account_list}" class="button button__secondary">Назад</a></p>
@@ -89,6 +77,4 @@
 			<p>По счёту пока нет ни одной операции</p>
 		</c:otherwise>
 	</c:choose>
-</div>
-</body>
-</html>
+</u:page>

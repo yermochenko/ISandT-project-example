@@ -2,6 +2,7 @@
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
 <%@taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 <%@taglib prefix="fn" uri="jakarta.tags.functions"%>
+<%@taglib prefix="u" tagdir="/WEB-INF/tags"%>
 <%--@elvariable id="account" type="by.vsu.ist.domain.Account"--%>
 <c:choose>
 	<c:when test="${not empty account}">
@@ -11,21 +12,7 @@
 		<c:set var="title" value="Открытие счёта"/>
 	</c:otherwise>
 </c:choose>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-	<meta charset="UTF-8">
-	<title>Гринготтс :: ${title}</title>
-	<c:url var="url__style_css" value="${'/style.css'}"/>
-	<link rel="stylesheet" href="${url__style_css}">
-	<c:url var="url__style_manager_css" value="${'/style-manager.css'}"/>
-	<link rel="stylesheet" href="${url__style_manager_css}">
-</head>
-<body>
-<div class="header primary-background">
-	<h1 class="header__title">Банк «Гринготтс»</h1>
-</div>
-<div class="content">
+<u:page title="Гринготтс :: ${title}" css="${['/style-manager.css']}">
 	<h2 class="page_title primary-color">${title}</h2>
 	<c:url var="url__manager_account_save" value="${'/manager/account/save.html'}"/>
 	<form action="${url__manager_account_save}" method="post" class="form">
@@ -86,6 +73,4 @@
 			<input type="hidden" name="id" value="${account.id}">
 		</form>
 	</c:if>
-</div>
-</body>
-</html>
+</u:page>
