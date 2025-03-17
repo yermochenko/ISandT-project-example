@@ -14,3 +14,16 @@ CREATE TABLE "transfer" (
 	"date"        TIMESTAMP NOT NULL DEFAULT now(),
 	"purpose"     TEXT
 );
+
+CREATE TYPE "user_role" AS ENUM (
+	'ADMIN',
+	'MANAGER',
+	'CASHIER'
+);
+
+CREATE TABLE "user" (
+	"id"       BIGSERIAL   PRIMARY KEY,
+	"login"    TEXT        NOT NULL UNIQUE,
+	"password" TEXT        NOT NULL,
+	"role"     "user_role" NOT NULL
+);

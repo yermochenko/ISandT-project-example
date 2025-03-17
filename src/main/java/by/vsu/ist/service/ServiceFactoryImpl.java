@@ -3,9 +3,11 @@ package by.vsu.ist.service;
 import by.vsu.ist.repository.AccountRepository;
 import by.vsu.ist.repository.TransactionManager;
 import by.vsu.ist.repository.TransferRepository;
+import by.vsu.ist.repository.UserRepository;
 import by.vsu.ist.repository.jdbc.AccountRepositoryImpl;
 import by.vsu.ist.repository.jdbc.TransactionManagerImpl;
 import by.vsu.ist.repository.jdbc.TransferRepositoryImpl;
+import by.vsu.ist.repository.jdbc.UserRepositoryImpl;
 import by.vsu.ist.repository.jdbc.cp.ConnectionPool;
 import by.vsu.ist.repository.jdbc.cp.ConnectionPoolException;
 import by.vsu.ist.service.exception.ServiceException;
@@ -15,6 +17,7 @@ import java.sql.SQLException;
 
 public class ServiceFactoryImpl implements ServiceFactory {
 	private AccountService accountService;
+	@Override
 	public AccountService getAccountServiceInstance() throws ServiceException {
 		if(accountService == null) {
 			AccountServiceImpl accountService = new AccountServiceImpl();
@@ -27,6 +30,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
 	}
 
 	private TransferService transferService;
+	@Override
 	public TransferService getTransferServiceInstance() throws ServiceException {
 		if(transferService == null) {
 			TransferServiceImpl transferService = new TransferServiceImpl();
@@ -36,6 +40,18 @@ public class ServiceFactoryImpl implements ServiceFactory {
 			this.transferService = transferService;
 		}
 		return transferService;
+	}
+
+	private UserService userService;
+	@Override
+	public UserService getUserServiceInstance() throws ServiceException {
+		if(userService == null) {
+			UserServiceImpl userService = new UserServiceImpl();
+			userService.setTransactionManager(getTransactionManagerInstance());
+			userService.setUserRepository(getUserRepositoryInstance());
+			this.userService = userService;
+		}
+		return userService;
 	}
 
 	private TransactionManager transactionManager;
@@ -66,6 +82,16 @@ public class ServiceFactoryImpl implements ServiceFactory {
 			this.transferRepository = transferRepository;
 		}
 		return transferRepository;
+	}
+
+	private UserRepository userRepository;
+	private UserRepository getUserRepositoryInstance() throws ServiceException {
+		if(userRepository == null) {
+			UserRepositoryImpl userRepository = new UserRepositoryImpl();
+			userRepository.setConnection(getConnectionInstance());
+			this.userRepository = userRepository;
+		}
+		return userRepository;
 	}
 
 	private Connection connection;

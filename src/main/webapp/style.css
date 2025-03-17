@@ -73,7 +73,7 @@ html, body {
 	margin-bottom: 0.5em;
 }
 
-.input_block input[type="text"] {
+.input_block input[type="text"], .input_block input[type="password"] {
 	border: 1px solid #222;
 	border-radius: 3px;
 	width: calc( 100% - 1em - 2px );

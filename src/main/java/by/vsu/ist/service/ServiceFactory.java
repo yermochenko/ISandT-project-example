@@ -7,6 +7,8 @@ public interface ServiceFactory extends AutoCloseable {
 
 	TransferService getTransferServiceInstance() throws ServiceException;
 
+	UserService getUserServiceInstance() throws ServiceException;
+
 	@Override
 	void close();
 
