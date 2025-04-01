@@ -5,127 +5,37 @@ import by.vsu.ist.domain.Transfer;
 import by.vsu.ist.repository.RepositoryException;
 import by.vsu.ist.repository.TransferRepository;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-public class TransferRepositoryImpl extends BaseRepository implements TransferRepository {
-	@Override
-	public Long create(Transfer transfer) throws RepositoryException {
-		String sql = "INSERT INTO \"transfer\"(\"sender_id\", \"receiver_id\", \"sum\", \"purpose\") VALUES (?, ?, ?, ?)";
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		try {
-			statement = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			Optional<Account> sender = transfer.getSender();
-			if(sender.isPresent()) {
-				statement.setLong(1, sender.get().getId());
-			} else {
-				statement.setNull(1, Types.INTEGER);
-			}
-			Optional<Account> receiver = transfer.getReceiver();
-			if(receiver.isPresent()) {
-				statement.setLong(2, receiver.get().getId());
-			} else {
-				statement.setNull(2, Types.INTEGER);
-			}
-			statement.setLong(3, transfer.getSum());
-			Optional<String> purpose = transfer.getPurpose();
-			if(purpose.isPresent()) {
-				statement.setString(4, purpose.get());
-			} else {
-				statement.setNull(4, Types.VARCHAR);
-			}
-			statement.executeUpdate();
-			resultSet = statement.getGeneratedKeys();
-			resultSet.next();
-			return resultSet.getLong(1);
-		} catch (SQLException e) {
-			throw new RepositoryException(e);
-		} finally {
-			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
-			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
-		}
+public class TransferRepositoryImpl extends BaseRepository<Transfer> implements TransferRepository {
+	public TransferRepositoryImpl() {
+		super(
+			"SELECT \"id\", \"sender_id\", \"receiver_id\", \"sum\", \"date\", \"purpose\" FROM \"transfer\" WHERE \"id\" = ?",
+			"INSERT INTO \"transfer\"(\"sender_id\", \"receiver_id\", \"sum\", \"purpose\") VALUES (?, ?, ?, ?)",
+			null,
+			null
+		);
 	}
 
 	@Override
 	public List<Transfer> readByAccount(Long accountId) throws RepositoryException {
 		String sql = "SELECT \"id\", \"sender_id\", \"receiver_id\", \"sum\", \"date\", \"purpose\" FROM \"transfer\" WHERE \"sender_id\" = ? OR \"receiver_id\" = ? ORDER BY \"date\" DESC";
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		try {
-			statement = getConnection().prepareStatement(sql);
-			statement.setLong(1, accountId);
-			statement.setLong(2, accountId);
-			resultSet = statement.executeQuery();
-			List<Transfer> transfers = new ArrayList<>();
-			while(resultSet.next()) {
-				Transfer transfer = new Transfer();
-				transfer.setId(resultSet.getLong("id"));
-				Long senderId = resultSet.getLong("sender_id");
-				if(!resultSet.wasNull()) {
-					Account sender = new Account();
-					sender.setId(senderId);
-					transfer.setSender(sender);
-				}
-				Long receiverId = resultSet.getLong("receiver_id");
-				if(!resultSet.wasNull()) {
-					Account receiver = new Account();
-					receiver.setId(receiverId);
-					transfer.setReceiver(receiver);
-				}
-				transfer.setSum(resultSet.getLong("sum"));
-				transfer.setDate(new java.util.Date(resultSet.getTimestamp("date").getTime()));
-				transfer.setPurpose(resultSet.getString("purpose"));
-				transfers.add(transfer);
-			}
-			return transfers;
-		} catch (SQLException e) {
-			throw new RepositoryException(e);
-		} finally {
-			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
-			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
-		}
-	}
-
-	@Override
-	public Optional<Transfer> read(Long id) throws RepositoryException {
-		String sql = "SELECT \"id\", \"sender_id\", \"receiver_id\", \"sum\", \"date\", \"purpose\" FROM \"transfer\" WHERE \"id\" = ?";
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		try {
-			statement = getConnection().prepareStatement(sql);
-			statement.setLong(1, id);
-			resultSet = statement.executeQuery();
-			Transfer transfer = null;
-			if(resultSet.next()) {
-				transfer = new Transfer();
-				transfer.setId(resultSet.getLong("id"));
-				Long senderId = resultSet.getLong("sender_id");
-				if(!resultSet.wasNull()) {
-					Account sender = new Account();
-					sender.setId(senderId);
-					transfer.setSender(sender);
-				}
-				Long receiverId = resultSet.getLong("receiver_id");
-				if(!resultSet.wasNull()) {
-					Account receiver = new Account();
-					receiver.setId(receiverId);
-					transfer.setReceiver(receiver);
-				}
-				transfer.setSum(resultSet.getLong("sum"));
-				transfer.setDate(new java.util.Date(resultSet.getTimestamp("date").getTime()));
-				transfer.setPurpose(resultSet.getString("purpose"));
-			}
-			return Optional.ofNullable(transfer);
-		} catch (SQLException e) {
-			throw new RepositoryException(e);
-		} finally {
-			try { Objects.requireNonNull(resultSet).close(); } catch(Exception ignored) {}
-			try { Objects.requireNonNull(statement).close(); } catch(Exception ignored) {}
-		}
+		List<Transfer> transfers = new ArrayList<>();
+		read(
+			sql,
+			statement -> {
+				statement.setLong(1, accountId);
+				statement.setLong(2, accountId);
+			},
+			transfers::add
+		);
+		return transfers;
 	}
 
 	@Override
@@ -135,6 +45,56 @@ public class TransferRepositoryImpl extends BaseRepository implements TransferRe
 
 	@Override
 	public void delete(Long id) {
+		throw new UnsupportedOperationException("Will not be supported");
+	}
+
+	@Override
+	protected Transfer buildFromResultSet(ResultSet resultSet) throws SQLException {
+		Transfer transfer = new Transfer();
+		transfer.setId(resultSet.getLong("id"));
+		Long senderId = resultSet.getLong("sender_id");
+		if(!resultSet.wasNull()) {
+			Account sender = new Account();
+			sender.setId(senderId);
+			transfer.setSender(sender);
+		}
+		Long receiverId = resultSet.getLong("receiver_id");
+		if(!resultSet.wasNull()) {
+			Account receiver = new Account();
+			receiver.setId(receiverId);
+			transfer.setReceiver(receiver);
+		}
+		transfer.setSum(resultSet.getLong("sum"));
+		transfer.setDate(new java.util.Date(resultSet.getTimestamp("date").getTime()));
+		transfer.setPurpose(resultSet.getString("purpose"));
+		return transfer;
+	}
+
+	@Override
+	protected void fillInsertPreparedStatement(PreparedStatement statement, Transfer transfer) throws SQLException {
+		Optional<Account> sender = transfer.getSender();
+		if(sender.isPresent()) {
+			statement.setLong(1, sender.get().getId());
+		} else {
+			statement.setNull(1, Types.INTEGER);
+		}
+		Optional<Account> receiver = transfer.getReceiver();
+		if(receiver.isPresent()) {
+			statement.setLong(2, receiver.get().getId());
+		} else {
+			statement.setNull(2, Types.INTEGER);
+		}
+		statement.setLong(3, transfer.getSum());
+		Optional<String> purpose = transfer.getPurpose();
+		if(purpose.isPresent()) {
+			statement.setString(4, purpose.get());
+		} else {
+			statement.setNull(4, Types.VARCHAR);
+		}
+	}
+
+	@Override
+	protected void fillUpdatePreparedStatement(PreparedStatement statement, Transfer transfer) {
 		throw new UnsupportedOperationException("Will not be supported");
 	}
 }
